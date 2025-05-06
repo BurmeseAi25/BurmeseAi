@@ -1,0 +1,33 @@
+import streamlit as st
+from keras.models import load_model
+import numpy as np
+from tensorflow.keras.preprocessing import image
+from PIL import Image
+
+# Load model
+model = load_model('model.h5')
+
+def predict(img):
+    img = img.resize((28, 28))
+    img = img.convert('L')
+    img = np.array(img)
+    img = img.reshape(1, 28, 28, 1)
+    img = img / 255.0
+    prediction = model.predict(img)
+    return np.argmax(prediction)
+
+def main():
+    st.title("မြန်မာ AI - လက်ရေးနံပါတ် ခန့်မှန်းခြင်း")
+    st.write("ပုံတင်ပြီး ခန့်မှန်းချက် ရယူပါ။")
+
+    uploaded_file = st.file_uploader("ပုံဖိုင် တင်ပါ", type=["jpg", "png", "jpeg"])
+    if uploaded_file is not None:
+        img = Image.open(uploaded_file)
+        st.image(img, caption="တင်ထားသောပုံ", use_column_width=True)
+        st.write("ခန့်မှန်းနေသည်...")
+
+        result = predict(img)
+        st.success(f"ရလဒ်: {result}")
+
+if __name__ == '__main__':
+    main()
